@@ -1,0 +1,280 @@
+---
+title: "Discussin Board - Recommendation System"
+author: "KoohPy <- Koohyar Pooladvand"
+date: "`r Sys.Date()`"
+output:
+  html_document: default
+  word_document: 
+  pdf_document:  
+editor_options:
+  markdown:
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Intro
+
+This assignment is to find an interesting recommender system and analyze
+it. I have chosen to work on [Goodreads](https://www.goodreads.com/).
+
+![](images/Goodreaders.png)
+
+What is Goodreads ([WIKI](https://en.wikipedia.org/wiki/Goodreads)):
+
+::: {#Goodreads}
+Goodreads is the world’s largest site for readers and book
+recommendations. It was launched in January 2007 and later acquired by
+Amazon in 2013. The platform is designed to help people find and share
+books they love. On Goodreads, you can:
+
+-   **Discover new books**: Based on your reading history and
+    preferences, Goodreads provides insightful recommendations.
+
+-   **Join discussions**: Engage in conversations about your favorite
+    books with a community of fellow readers.
+
+-   **Rate and review books**: Share your thoughts on books you’ve read
+    and see what others have to say.
+
+-   **Track your reading**: Keep a log of books you’ve read, are
+    currently reading, or plan to read in the future.
+
+-   **Participate in challenges**: Set personal reading goals and join
+    others in reading challenges.
+
+-   **Vote in the Goodreads Choice Awards**: Have a say in the annual
+    awards that recognize the best books across various genres
+:::
+
+![](images/R.png)
+
+## Scenario Design Analysis
+
+After a user has rated 20 books on its five-star scale, the site will
+begin making recommendations. Goodreads employs a dual-faceted
+recommendation system designed to cater to the diverse preferences of
+its users. This system comprises two primary components:
+
+-   **Recommendations Page**: This feature generates personalized book
+    suggestions by leveraging an algorithm that analyzes users’
+    bookshelves and preferred genres^[3]^. It is a dynamic system that
+    evolves with the user’s interactions on the platform, ensuring that
+    the recommendations remain relevant and engaging.
+
+-   **Readers Also Enjoyed**: An additional layer of discovery is
+    provided by this feature, which can be found on individual book
+    pages. It suggests titles that other users who enjoyed the same book
+    also liked[4]. This method offers `serendipitous` finds by
+    connecting books through shared reader appreciation, rather than
+    relying solely on genre or user-provided data.
+
+As you can see, Goodreaders has two ways to recommend one directly
+getting information from users and one indirectly through inference by
+analyzing what a person has shown interest too.
+
+### Target users?
+
+The target users for Goodreads’ recommendation system are avid readers
+who frequent the site. The system aims to enhance their literary
+exploration by:
+
+-   **Direct Matching**: Analyzing users’ ratings and bookshelves to
+    suggest books that align with their expressed interests.
+
+-   **Inferred Suggestions**: Offering recommendations based on the
+    books users explore on the site, tapping into the collective
+    intelligence of the Goodreads community.
+
+### Their key goals?
+
+Their targets are avid readers and writers, and their goals are to
+enhance the overall reading experience, making it more social, engaging,
+and tailored to individual preferences as well as to create a community
+by improving people's experience.
+
+The system revolve around fostering a community of readers who can
+explore, find, and share books they cherish and like by [6]:
+
+-   **Encourage Reading**: Goodreads motivates users to read more
+    through features like the annual Reading Challenge, where users set
+    a goal for the number of books they want to read each year.
+
+-   **Facilitate Discovery**: By providing personalized recommendations
+    and showing what other readers enjoyed, Goodreads helps users
+    discover new books that match their interests^1^.
+
+-   **Enable Sharing**: Users can rate, review, and discuss books,
+    contributing to a rich community dialogue around literature^1^.
+
+-   **Track Reading Habits**: Goodreads offers tools for users to track
+    the books they’ve read, are currently reading, or plan to read,
+    helping them organize their reading life^1^.
+
+## How Reverse Engineer theirs
+
+To reverse engineer what they do you need the combination of users' data
+and books data to generate a personalized recommendation.
+
+1.  **User Data**: We need to create database of user's reading history,
+    ratings, reviews, and the shelves each user has created to
+    understand their preferences.
+
+2.  **Book Data**: Information about the books, such as genre, author,
+    and popularity, is used to find titles similar to those of
+    particular user's enjoyed.
+
+3.  **Collaborative Filtering**: The algorithm looks at the behavior of
+    other users with similar tastes to suggest what this particular user
+    might like.
+
+I would like to delve a bit deeper into item-item collaborative
+filtering, which stands out as one of the most fascinating features of
+Goodreads. In this model, when User A rates certain books, the algorithm
+then utilizes these ratings to identify and recommend other books to
+User A. An example of such a recommendation list is illustrated below.
+Concurrently, the system seeks user input to refine its recommendations.
+By interacting with the system—such as by clicking on a provided
+link—you can assist in enhancing the algorithm, ensuring even more
+tailored suggestions in the future.
+
+[![an-introduction-recommender-system](images/collaborative_filtering_example_goodreads.png)](https://www.iteratorshq.com/blog/an-introduction-recommender-systems-9-easy-examples/)
+
+It is worth noting that item-item collaborative filtering is a prevalent
+recommendation system utilized across various domains. This method
+manifests in forms such as thumbnail images in your dress search results
+or suggestions in your Google and Amazon searches. It operates on the
+principle of similarity, recommending items based on their resemblance
+to products you’ve shown interest in, thereby catering to the specific
+preferences of users.
+
+![Collaborative and Content-Based Filtering
+Algorithms](images/Two-different-types-of-ML-algorithm-for-RS-a-Content-based-approach-and-b-Collaborative.png)
+
+Additionally, I would like to touch base on another topic,
+**Content-Based Filtering**. Goodreads may also utilize content-based
+filtering algorithms, which recommend items similar to those the user
+has already liked or interacted with. This approach considers the
+characteristics of the items themselves, such as genre, author, and
+content, to make recommendations.
+
+## How good are Goodreads algorithms?
+
+In exploring the efficacy of Goodreads’ algorithms, particularly the
+“Readers Also Enjoyed” feature, I encountered an insightful
+[blog](https://bookriot.com/goodreads-readers-also-enjoyed-feature/) [4]
+where an avid reader conducted an informal performance test. The blogger
+suggests that while the algorithm excels at identifying popular books
+within a genre, it may not finely tune recommendations based on the
+nuanced characteristics of a reader’s favored titles. This could lead to
+the suggestion of well-liked books that share a genre but not
+necessarily the unique qualities that a user might appreciate in a book.
+
+Despite this, the blogger acknowledges the algorithm’s overall success,
+as evidenced by their high ratings for books recommended by Goodreads.
+This positive outcome underscores the platform’s reputation among its
+users for providing quality recommendations, even if there’s room for
+refinement in capturing individual tastes.
+
+![](images/cold-start-problem-l.jpg)
+
+Another issue with the Goodreads is an issue known as **Cold Start
+Problem**. This seems to be one of the primary challenges for Goodreads,
+especially for new users, is the cold start problem. This occurs when
+the recommendation system lacks sufficient data about a user's
+preferences and behaviors to make accurate recommendations. Goodreads
+may struggle to provide relevant suggestions until users have rated a
+significant number of books. i.e, 20 books.
+
+I also came across another terms when delve intn the Goodreads potential
+issues, **Limited Diversity and Serendipity**. Goodreads' recommendation
+system may exhibit a tendency to recommend popular or mainstream books,
+potentially limiting the diversity and serendipity of recommendations.
+Users may miss out on discovering lesser-known or niche titles that
+align with their interests but are not widely recognized.
+
+## Any Recommendations
+
+1.  **Incorporate Sentiment Analysis**:
+
+    -   Goodreads could integrate sentiment analysis into its
+        recommendation system to better understand users' emotional
+        responses to books. By analyzing user reviews for sentiment, the
+        system could identify books that resonate with readers on a
+        deeper level, leading to more personalized and impactful
+        recommendations. This enhancement could enhance user engagement
+        and satisfaction by recommending books that evoke strong
+        emotional connections.
+
+2.  **Expand Feature-Based Recommendations**:
+
+    -   Goodreads can expand its feature-based recommendations beyond
+        genre and author to include more diverse attributes such as
+        writing style, narrative structure, themes, and character
+        development. By considering a broader range of features, the
+        recommendation system can offer more nuanced and tailored
+        suggestions that align with users' specific preferences and
+        reading tastes. This enhancement could enhance user discovery
+        and exploration by introducing them to books that resonate with
+        their unique interests and preferences.
+
+3.  **Integrate Advanced Machine Learning Models**:
+
+    -   Goodreads can leverage advanced machine learning models such as
+        deep learning and natural language processing to improve the
+        accuracy and relevance of its recommendations. These models can
+        analyze complex patterns and relationships in user data and book
+        content to generate more sophisticated and personalized
+        recommendations. By incorporating advanced machine learning
+        techniques, Goodreads can enhance the effectiveness of its
+        recommendation system and provide users with highly relevant and
+        engaging book suggestions.
+
+    -    Study “[Enhancing Book Recommendation in
+        Goodreads,](https://link.springer.com/chapter/10.1007/978-3-031-54376-0_36)[7]”
+        indicates that machine learning models like Random Forest and
+        Support Vector Classifier could significantly improve
+        recommendation quality, suggesting a promising direction for
+        Goodreads’ algorithmic development.
+
+## Conclusion
+
+Recommender systems are pivotal to e-commerce, influencing giants and
+retailers alike. These algorithms are a boon for users with unique
+tastes, though their effectiveness is still debated.
+
+![](images/Goodreads-success-story-infographic1.jpg)
+
+This study explored Goodreads’ recommender system, a leading platform
+for book enthusiasts. Despite limited details on its algorithm, it’s
+clear that collaborative filtering is a key component. Critiques suggest
+a tendency towards generalization, especially in the “Readers Also
+Enjoyed” section, yet the system reliably curates books aligned with
+users’ interests.
+
+With AI’s rapid advancement, incorporating sophisticated algorithms like
+Random Forest could further refine Goodreads’ recommendations. This
+exploration underscores the critical role of recommender systems in
+today’s economy and the ample opportunities for AI to enhance them.
+
+## References & Citations
+
+1.  <https://www.iteratorshq.com/blog/an-introduction-recommender-systems-9-easy-examples/>
+
+2.  [Goodreads - Wikipedia](https://en.wikipedia.org/wiki/Goodreads)
+
+3.  <https://help.goodreads.com/s/announcements/a031H00000OfUjVQAV/helpful-goodreads-hack-finding-book-recommendations>
+
+4.  <https://bookriot.com/goodreads-readers-also-enjoyed-feature/>
+
+5.  [\<Reliable Book Recommender System: An Evaluation and Comparison of
+    Collaborative Filtering Algorithms \|
+    SpringerLink\>](https://link.springer.com/chapter/10.1007/978-3-030-90055-7_20)
+
+6.  \<[Help:(goodreads.com)](https://help.goodreads.com/s/article/How-do-I-change-my-reading-challenge-goal)\>
+
+7.  [Enhancing Book Recommendations on GoodReads: A Data Mining Approach
+    Based Random Forest Classification \|
+    SpringerLink](https://link.springer.com/chapter/10.1007/978-3-031-54376-0_36)
